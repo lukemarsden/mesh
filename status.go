@@ -40,7 +40,7 @@ func NewStatus(router *Router) *Status {
 		UnicastRoutes:      makeUnicastRouteStatusSlice(router.Routes),
 		BroadcastRoutes:    makeBroadcastRouteStatusSlice(router.Routes),
 		Connections:        makeLocalConnectionStatusSlice(router.ConnectionMaker),
-		Targets:            router.ConnectionMaker.Targets(false),
+		Targets:            makeTargets(router.ConnectionMaker),
 		OverlayDiagnostics: router.Overlay.Diagnostics(),
 		TrustedSubnets:     makeTrustedSubnetsSlice(router.TrustedSubnets),
 	}
@@ -203,6 +203,12 @@ func makeLocalConnectionStatusSlice(cm *connectionMaker) []LocalConnectionStatus
 		return false
 	}
 	return <-resultChan
+}
+
+// makeTargets makes a list of direct peers
+func makeTargets(cm *connectionMaker) []string {
+	direct, _ := cm.Targets(false)
+	return direct
 }
 
 // makeTrustedSubnetsSlice makes a human-readable copy of the trustedSubnets.
